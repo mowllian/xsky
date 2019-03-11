@@ -1,0 +1,46 @@
+Sub SingleArrayPermutations()
+'Reads in an array and outputs the combinations that fall within a particular value range
+Dim inputRng As Range, outputRng As Range, oCell As Range
+Dim Count1 As Long, Counter As Long, i As Long, j As Long, k As Long, m As Long, n As Long
+Dim readInCounter As Long: readInCounter = 0
+Dim readInArray() As Double
+Dim allCombinations() As Variant 'Holds all the possible combinations of readInArray
+Set inputRng = Application.InputBox(Prompt:="Intervalo de valores", Default:=ActiveCell, Type:=8)
+Set outputRng = Application.InputBox(Prompt:="Coluna para salvar resultado", Default:=ActiveCell, Type:=8)
+Dim lowBound As Integer: lowBound = Application.InputBox(Prompt:="Limite inferior", Default:=26, Type:=1)
+Dim upperBound As Integer: upperBound = Application.InputBox(Prompt:="Limite superior", Default:=30, Type:=1)
+Count1 = inputRng.Cells.Count
+ReDim readInArray(1 To Count1) As Double
+ReDim allCombinations(1 To 2 ^ Count1 - 1, 0 To 1) As Variant
+For Each oCell In inputRng.Cells
+      readInCounter = readInCounter + 1
+      readInArray(readInCounter) = oCell.Value
+Next oCell
+m = 1
+For i = 1 To Count1
+      k = 0
+      For j = 1 To i
+          k = k + 2 ^ (j - 1)
+      Next j
+      For n = m To k
+          If n = k Then
+                allCombinations(n, 0) = readInArray(i)
+                allCombinations(n, 1) = CStr(readInArray(i))
+          Else
+                allCombinations(n, 0) = allCombinations(n - m + 1, 0) + readInArray(i)
+                allCombinations(n, 1) = allCombinations(n - m + 1, 1) & "|" & CStr(readInArray(i))
+          End If
+      Next n
+      m = k + 1
+Next i
+  
+j = 0
+For i = 1 To UBound(allCombinations, 1)
+    If allCombinations(i, 0) >= lowBound And allCombinations(i, 0) <= upperBound Then
+        outputRng.Offset(j, 0) = allCombinations(i, 1)
+        j = j + 1
+    End If
+Next i
+  
+veryEnd:
+End Sub
